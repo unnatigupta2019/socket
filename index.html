@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message App</title>
+    <style>
+      body {
+        background-color: #f2f2f2;
+        font-family: Arial, sans-serif;
+      }
+
+      #username {
+        font-weight: bold;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      input[type="text"] {
+        width: 300px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        background-color: #1dbc8f;
+        color: #fff;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #e2921a;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      /* Animation */
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideIn {
+        0% {
+          transform: translateX(-20px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      li {
+        animation: fadeIn 0.5s ease-in-out, slideIn 0.5s ease-in-out;
+      }
+
+      /* Different colors for each chat message */
+      li:nth-child(odd) {
+        background-color: #ecf40fed;
+      }
+
+      li:nth-child(even) {
+        background-color: #e4ce0f;
+      }
+    </style>
+  </head>
+  <body>
+    <p>You are logged in as:<span id="username"></span></p>
+    <form action="" id="msg-app">
+      <p>Write a message:</p>
+      <input type="hidden" name="user" id="user" />
+      <input type="text" name="message" id="message" />
+      <button type="button" id="submit">Submit</button>
+    </form>
+    <ul id="chat-area"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket = io();
+      let username = window.location.pathname.split("/")[1];
+
+      document.getElementById("user").value = username;
+      document.getElementById("username").innerText = username;
+
+      document.getElementById("submit").addEventListener("click", function (e) {
+        socket.emit("chat-message", {
+          user: username,
+          message: document.getElementById("message").value,
+        });
+      });
+
+      socket.on("chat-message", function (msg) {
+        // console.log(data);
+        document.getElementById(
+          "chat-area"
+        ).innerHTML += `<li>${msg.user} says: ${msg.message}</li>`;
+      });
+    </script>
+  </body>
+</html>
